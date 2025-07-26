@@ -8,7 +8,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <div className="app-name">🛒 Buy From Amazon</div>
+        <div className="app-name">🛒 Top Choice</div>
         <button className="signin-button" onClick={() => navigate('/login')}>Sign In</button>
       </header>
 

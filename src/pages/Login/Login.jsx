@@ -16,7 +16,6 @@ const Login = () => {
         return;
       }
       const user = await loginWithUsernamePassword(username.trim(), password);
-      console.log("Logged in:", user);
       navigate("/admin");
     } catch (err) {
       alert("Login failed");

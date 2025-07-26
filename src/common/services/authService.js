@@ -4,9 +4,7 @@ import { db } from "../../config/firebase";
 
 // Check if a user exists with matching username and password
 export const loginWithUsernamePassword = async (username, password) => {
-  const usersRef = collection(db, "users");
-  console.log('usersRef', usersRef);
-  
+  const usersRef = collection(db, "users");  
   const q = query(usersRef, where("username", "==", username), where("password", "==", password));
   const snapshot = await getDocs(q);
 

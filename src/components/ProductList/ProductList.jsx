@@ -6,12 +6,9 @@ const ProductList = (props) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-useEffect(()=> {
-  console.log('props?.products', props?.products);
-  
-  setProducts(props?.products || [])
-}, [props?.products])
-
+  useEffect(() => {
+    setProducts(props?.products || []);
+  }, [props?.products]);
 
   if (loading) return <p>Loading products...</p>;
 
@@ -21,9 +18,13 @@ useEffect(()=> {
         <p>No products found.</p>
       ) : (
         products.map((product) => (
-          <>
-          <ProductCard key={product.id} product={product} />
-          </>
+          <ProductCard
+            key={product.id}
+            product={product}
+            isAdmin={props?.isAdmin}
+            deleteEvent={props?.deleteEvent}
+            editEvent={props?.editEvent}
+          />
         ))
       )}
     </div>

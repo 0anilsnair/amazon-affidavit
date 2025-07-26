@@ -3,12 +3,15 @@ import { useState } from "react";
 import ProductList from "../ProductList/ProductList";
 
 const MainContent = ({
+  isAdmin,
   products,
   searchTerm,
   setSearchTerm,
   categories,
   activeCategory,
   setActiveCategory,
+  deleteEvent,
+  editEvent
 }) => {
 
   return (
@@ -52,7 +55,12 @@ const MainContent = ({
         </div>
       </div>
 
-      <ProductList products={products}/>
+      <ProductList 
+        products={products} 
+        isAdmin={isAdmin}
+        editEvent={editEvent}
+        deleteEvent={deleteEvent}
+        />
     </main>
   );
 };

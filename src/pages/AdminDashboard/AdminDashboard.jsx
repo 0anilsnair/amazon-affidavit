@@ -1,23 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import ProductList from "../../components/ProductList/ProductList";
 import "./AdminDashboard.scss";
-import Modal from "../../common/components/modal/Modal";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import Footer from "../../common/components/Footer/Footer";
+import Header from "../../common/components/Header/Header";
+import MainContent from "../../components/MainContent/MainContent";
+import { useEffect, useState } from "react";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../config/firebase";
+import AddProductModal from "./AddProductModal/AddProductModal";
+import DeleteModal from "../../common/components/DeleteModal/DeleteModal";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
-
   const [products, setProducts] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: "",
-    description: "",
-    link: "",
-    timestamp: "",
-    category: "",
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm?.toLowerCase());
+    const matchesCategory =
+      activeCategory === "All" || product.category === activeCategory;
+    return matchesSearch && matchesCategory;
   });
+  const categories = [
+    "All",
+    ...new Set(products.map((product) => product.category)),
+  ];
+  const [modalOpen, setModelOpen] = useState(false);
+  const [editData, setEditData] = useState();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -31,146 +46,113 @@ const AdminDashboard = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log(productList, "productList");
       setProducts(productList);
     } catch (error) {
-      setProducts([]);
       console.error("Error fetching products:", error);
     }
   };
 
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => {
-    setModalOpen(false);
-    setNewProduct({ name: "", description: "", link: "" });
+  const addProductEvent = () => {
+    setEditData();
+    setModelOpen(true);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewProduct((prev) => ({ ...prev, [name]: value }));
-  };
-
-  console.log(newProduct);
-
-  const handleAddProduct = (e) => {
+  const handleAddProduct = (data) => {
     e.preventDefault();
     if (
-      !newProduct.name.trim() ||
-      !newProduct.link.trim() | !newProduct.category.trim() ||
-      !newProduct.image.trim()
+      !data.name.trim() ||
+      !data.link.trim() | !data.category.trim() ||
+      !data.image.trim()
     ) {
       alert("Please enter mandatory fields");
       return;
     }
     const newEntry = {
       id: products.length + 1,
-      ...newProduct,
+      ...data,
     };
     setProducts((prev) => [...prev, newEntry]);
     closeModal();
   };
 
-  const onLogout = () => {
-    navigate("/login");
-  };
-
-  const addProduct = async () => {
+  const addProduct = async (data) => {
     try {
       if (
-        !newProduct.name.trim() ||
-        !newProduct.link.trim() | !newProduct.category.trim() ||
-        !newProduct.image.trim()
+        !data.name.trim() ||
+        !data.link.trim() | !data.category.trim() ||
+        !data.image.trim()
       ) {
         alert("Please enter mandatory fields");
         return;
       }
-      const docRef = await addDoc(collection(db, "products"), {
-        ...newProduct,
-        timestamp: new Date(),
-      });
-      closeModal();
+      if (!data?.id) {
+        const docRef = await addDoc(collection(db, "products"), {
+          ...data,
+          timestamp: new Date(),
+        });
+      } else {
+        const docRef = doc(db, "products", data?.id);
+        await updateDoc(docRef, {
+          ...data,
+          timestamp: new Date(),
+        });
+        setEditData();
+      }
+
+      setModelOpen(false);
+      await fetchProducts();
     } catch (e) {
       console.error("Error adding product: ", e);
     }
   };
 
+  const editEvent = (product) => {
+    setEditData(product);
+    setModelOpen(true);
+  };
+
+  const deleteEvent = (product) => {
+    setDeleteModalOpen(true);
+    setEditData(product);
+  };
+
+  const deleteEventAction = async () => {
+    const docRef = doc(db, "products", editData?.id);
+    await deleteDoc(docRef);
+    setDeleteModalOpen(false);
+    await fetchProducts();
+  };
+
   return (
-    <div className="admin-dashboard">
-      <header className="admin-dashboard-header">
-        <h1>Admin Dashboard</h1>
-        <div className="header-buttons">
-          <button className="add-product-btn" onClick={openModal}>
-            Add New Product
-          </button>
-          <button className="logout-btn" onClick={onLogout}>
-            Logout
-          </button>
-        </div>
-      </header>
-
-      <Modal isOpen={modalOpen} onClose={closeModal}>
-        <h2>Add New Product</h2>
-        <form
-          className="add-product-form"
-          onSubmit={handleAddProduct}
-          noValidate
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name *"
-            value={newProduct.name}
-            onChange={handleChange}
-            required
-            autoFocus
-          />
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={newProduct.description}
-            onChange={handleChange}
-          />
-          <input
-            type="url"
-            name="link"
-            placeholder="Product Link *"
-            value={newProduct.link}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="url"
-            name="image"
-            placeholder="Image Link *"
-            value={newProduct.image}
-            onChange={handleChange}
-            required
-          />
-          <select
-            name="category"
-            value={newProduct.type}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Product Type *</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Home & Kitchen">Home & Kitchen</option>
-            <option value="Furniture">Furniture</option>
-            <option value="Sports & Fitness">Sports & Fitness</option>
-            <option value="Other">Other</option>
-          </select>
-          <div className="modal-buttons">
-            <button type="submit" className="submit-btn" onClick={addProduct}>
-              Add Product
-            </button>
-            <button type="button" className="cancel-btn" onClick={closeModal}>
-              Cancel
-            </button>
-          </div>
-        </form>
-      </Modal>
-
-      <ProductList products={products} />
+    <div>
+      <AddProductModal
+        modalOpen={modalOpen}
+        data={editData}
+        closeModal={() => setModelOpen(false)}
+        handleAddProduct={handleAddProduct}
+        addProduct={addProduct}
+      />
+      <DeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={deleteEventAction}
+        itemName={editData?.name}
+      />
+      <div className="app-container">
+        <Header isAdmin={true} addProductEvent={addProductEvent} />
+        <MainContent
+          isAdmin={true}
+          products={filteredProducts}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          categories={categories}
+          activeCategory={activeCategory}
+          setActiveCategory={setActiveCategory}
+          deleteEvent={(product) => deleteEvent(product)}
+          editEvent={(product) => editEvent(product)}
+        />
+        <Footer />
+      </div>
     </div>
   );
 };

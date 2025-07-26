@@ -1,0 +1,36 @@
+/* src/components/Modal/DeleteModal.scss */
+
+.delete-modal {
+  padding: 20px;
+  text-align: center;
+
+  h2 {
+    margin-bottom: 10px;
+  }
+
+  p {
+    margin-bottom: 20px;
+  }
+
+  &__buttons {
+    display: flex;
+    justify-content: space-around;
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+
+      &.cancel {
+        background-color: #ccc;
+        color: #333;
+      }
+
+      &.confirm {
+        background-color: #e74c3c;
+        color: white;
+      }
+    }
+  }
+}

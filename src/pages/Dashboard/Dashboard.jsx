@@ -38,16 +38,13 @@ const Dashboard = () => {
       setProducts(productList);
     } catch (error) {
       console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-      props?.isListLoaded();
     }
   };
 
   return (
     <div>
       <div className="app-container">
-        <Header />
+        <Header isAdmin={false} />
         <MainContent
           products={filteredProducts}
           searchTerm={searchTerm}

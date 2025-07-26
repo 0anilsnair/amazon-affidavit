@@ -1,30 +1,17 @@
 import "./ProductCard.scss";
 
-const ProductCard = ({ product }) => {
-  const handleCopy = () => {
-    navigator.clipboard.writeText(product.link);
-    alert("Product link copied!");
-  };
-
+const ProductCard = ({ product, isAdmin, editEvent, deleteEvent }) => {
+  
   const handleOpen = () =>
     window.open(product.link, "_blank", "noopener,noreferrer");
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: product.name,
-          text: product.description,
-          url: product.link,
-        })
-        .catch(console.error);
-    } else {
-      alert(`Sharing not supported. Product: ${product.name}`);
-    }
-  };
+  
 
   return (
-    <div className="product-card" onClick={()=> handleOpen()} title="Click to Open">
+    <div
+      className={isAdmin ? "product-card" : "product-card clickable"}
+      onClick={() => !isAdmin && handleOpen()}
+      title="Click to Open"
+    >
       <div className="product-image-container">
         <img src={product.image} alt={product.name} className="product-image" />
       </div>
@@ -32,8 +19,19 @@ const ProductCard = ({ product }) => {
         <div className="product-category">{product.category}</div>
         <h3 className="product-name">{product.name}</h3>
         <p className="product-description">{product.description}</p>
-        <div className="product-price-row">
-        </div>
+        <div className="product-price-row"></div>
+        {isAdmin && (
+          <div className="action-buttons">
+            <button className="edit-btn" onClick={() => editEvent(product)}>
+              <i className="fas fa-pencil"></i>
+              Edit
+            </button>
+            <button className="delete-btn" onClick={() => deleteEvent(product)}>
+              <i className="fas fa-trash"></i>
+              Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

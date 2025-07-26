@@ -1,22 +1,39 @@
-import './ProductCard.scss';
+import "./ProductCard.scss";
 
 const ProductCard = ({ product }) => {
-  const handleShare = () => alert(`Sharing: ${product.name}`);
   const handleCopy = () => {
     navigator.clipboard.writeText(product.link);
-    alert('Product link copied!');
+    alert("Product link copied!");
   };
-  const handleOpen = () => window.open(product.link, '_blank');
+
+  const handleOpen = () =>
+    window.open(product.link, "_blank", "noopener,noreferrer");
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: product.name,
+          text: product.description,
+          url: product.link,
+        })
+        .catch(console.error);
+    } else {
+      alert(`Sharing not supported. Product: ${product.name}`);
+    }
+  };
 
   return (
-    <div className='productCard'>
-      <div className='productInfo'>
-        <h3>{product.name}</h3>
-        <p>{product.description}</p>
+    <div className="product-card" onClick={()=> handleOpen()} title="Click to Open">
+      <div className="product-image-container">
+        <img src={product.image} alt={product.name} className="product-image" />
       </div>
-      <div className='productActions'>
-        <button onClick={handleCopy}>📋 Copy</button>
-        <button onClick={handleOpen}>🔍 Open</button>
+      <div className="product-details">
+        <div className="product-category">{product.category}</div>
+        <h3 className="product-name">{product.name}</h3>
+        <p className="product-description">{product.description}</p>
+        <div className="product-price-row">
+        </div>
       </div>
     </div>
   );

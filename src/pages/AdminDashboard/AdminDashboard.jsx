@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductList from "../../components/ProductList/ProductList";
 import "./AdminDashboard.scss";
 import Modal from "../../common/components/modal/Modal";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
 
 const AdminDashboard = () => {
@@ -15,9 +15,29 @@ const AdminDashboard = () => {
     name: "",
     description: "",
     link: "",
-    timestamp: ""
+    timestamp: "",
+    category: "",
   });
-  const [refetch, setRefetch] = useState(false);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const productsCol = collection(db, "products");
+      const productsSnapshot = await getDocs(productsCol);
+      const productList = productsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(productList, "productList");
+      setProducts(productList);
+    } catch (error) {
+      setProducts([]);
+      console.error("Error fetching products:", error);
+    }
+  };
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => {
@@ -30,10 +50,16 @@ const AdminDashboard = () => {
     setNewProduct((prev) => ({ ...prev, [name]: value }));
   };
 
+  console.log(newProduct);
+
   const handleAddProduct = (e) => {
     e.preventDefault();
-    if (!newProduct.name.trim() || !newProduct.link.trim()) {
-      alert("Please enter product name and link");
+    if (
+      !newProduct.name.trim() ||
+      !newProduct.link.trim() | !newProduct.category.trim() ||
+      !newProduct.image.trim()
+    ) {
+      alert("Please enter mandatory fields");
       return;
     }
     const newEntry = {
@@ -50,16 +76,21 @@ const AdminDashboard = () => {
 
   const addProduct = async () => {
     try {
+      if (
+        !newProduct.name.trim() ||
+        !newProduct.link.trim() | !newProduct.category.trim() ||
+        !newProduct.image.trim()
+      ) {
+        alert("Please enter mandatory fields");
+        return;
+      }
       const docRef = await addDoc(collection(db, "products"), {
         ...newProduct,
         timestamp: new Date(),
       });
       closeModal();
-      setRefetch(true);
     } catch (e) {
       console.error("Error adding product: ", e);
-    } finally {
-      // setRefetch(false);
     }
   };
 
@@ -107,6 +138,27 @@ const AdminDashboard = () => {
             onChange={handleChange}
             required
           />
+          <input
+            type="url"
+            name="image"
+            placeholder="Image Link *"
+            value={newProduct.image}
+            onChange={handleChange}
+            required
+          />
+          <select
+            name="category"
+            value={newProduct.type}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Product Type *</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Home & Kitchen">Home & Kitchen</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Sports & Fitness">Sports & Fitness</option>
+            <option value="Other">Other</option>
+          </select>
           <div className="modal-buttons">
             <button type="submit" className="submit-btn" onClick={addProduct}>
               Add Product
@@ -118,7 +170,7 @@ const AdminDashboard = () => {
         </form>
       </Modal>
 
-      <ProductList refetch={refetch} isListLoaded={()=> setRefetch(false)}/>
+      <ProductList products={products} />
     </div>
   );
 };

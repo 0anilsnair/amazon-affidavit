@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import "./Login.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { loginWithUsernamePassword } from "../../common/services/authService";
+import { analytics } from "../../config/firebase";
+import { logEvent } from "firebase/analytics";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -15,9 +17,15 @@ const Login = () => {
         alert("Please enter both username and password");
         return;
       }
+      logEvent(analytics, "login", {
+        action: "Login",
+        time: new Date(),
+      });
       const user = await loginWithUsernamePassword(username.trim(), password);
       navigate("/admin");
     } catch (err) {
+      console.log(err);
+      
       alert("Login failed");
     }
   };
@@ -26,7 +34,7 @@ const Login = () => {
     <div className="admin-login-page">
       <header className="admin-login-header">🔒 Admin Login</header>
 
-      <form className="admin-login-form" onSubmit={(e)=> e?.preventDefault()}>
+      <form className="admin-login-form" onSubmit={(e) => e?.preventDefault()}>
         <label htmlFor="username">Username</label>
         <input
           id="username"

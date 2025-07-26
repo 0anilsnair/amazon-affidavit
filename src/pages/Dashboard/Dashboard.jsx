@@ -4,7 +4,8 @@ import Header from "../../common/components/Header/Header";
 import MainContent from "../../components/MainContent/MainContent";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { analytics, db } from "../../config/firebase";
+import { logEvent } from "firebase/analytics";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
@@ -25,6 +26,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchProducts();
+    logEvent(analytics, "page_view", {
+      page: "User Page",
+    });
   }, []);
 
   const fetchProducts = async () => {

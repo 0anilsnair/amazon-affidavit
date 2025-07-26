@@ -4,15 +4,17 @@ import Header from "../../common/components/Header/Header";
 import MainContent from "../../components/MainContent/MainContent";
 import { useEffect, useState } from "react";
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { analytics, db } from "../../config/firebase";
 import AddProductModal from "./AddProductModal/AddProductModal";
 import DeleteModal from "../../common/components/DeleteModal/DeleteModal";
+import { logEvent } from "firebase/analytics";
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
@@ -36,6 +38,9 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchProducts();
+    logEvent(analytics, "page_view", {
+      page: "Admin Page",
+    });
   }, []);
 
   const fetchProducts = async () => {
@@ -90,6 +95,9 @@ const AdminDashboard = () => {
           ...data,
           timestamp: new Date(),
         });
+        logEvent(analytics, "add_to_cart", {
+          action: "Add Product",
+        });
       } else {
         const docRef = doc(db, "products", data?.id);
         await updateDoc(docRef, {
@@ -97,6 +105,9 @@ const AdminDashboard = () => {
           timestamp: new Date(),
         });
         setEditData();
+        logEvent(analytics, "add_shipping_info", {
+          action: "Edit Product",
+        });
       }
 
       setModelOpen(false);
@@ -121,6 +132,9 @@ const AdminDashboard = () => {
     await deleteDoc(docRef);
     setDeleteModalOpen(false);
     await fetchProducts();
+    logEvent(analytics, "remove_from_cart", {
+      action: "Delete Product",
+    });
   };
 
   return (

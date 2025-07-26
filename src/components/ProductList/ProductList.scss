@@ -1,0 +1,46 @@
+// src/pages/ProductList/ProductList.scss
+
+$product-gap: 24px;
+
+.productList-section {
+  padding: 30px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.productList-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 32px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 8px;
+
+  @media (min-width: 600px) {
+    font-size: 28px;
+  }
+
+  @media (min-width: 900px) {
+    font-size: 32px;
+  }
+}
+
+.productList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: $product-gap;
+  animation: fadeIn 0.5s ease-in-out;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

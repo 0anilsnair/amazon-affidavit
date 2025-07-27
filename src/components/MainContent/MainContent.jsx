@@ -1,6 +1,7 @@
 import "./MainContent.scss";
 import { useState } from "react";
 import ProductList from "../ProductList/ProductList";
+import { getWebPageContent } from "../../endpoints/scaper";
 
 const MainContent = ({
   isAdmin,
@@ -14,6 +15,32 @@ const MainContent = ({
   editEvent,
   types,
 }) => {
+  const [scrapUrl, setScrapUrl] = useState("");
+  const [scrapData, setScrapData] = useState({
+    data: undefined,
+    isLoading: false,
+  });
+
+  const scrapUrlEvent = async () => {
+    if(!scrapUrl) {
+      return;
+    }
+    setScrapData({ isLoading: true });
+    getWebPageContent(scrapUrl).then((e) => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(e?.data, "text/html");
+      const title = doc.getElementById("productTitle")?.textContent?.trim();
+      const type = doc
+        .getElementsByClassName("nav-a-content")?.[0]
+        ?.textContent?.trim();
+      const image = doc.getElementById("landingImage")?.getAttribute("src");
+      setScrapData({
+        isLoading: false,
+        data: { title, type, image, url: scrapUrl },
+      });
+      setScrapUrl("");
+    });
+  };
 
   return (
     <main className="main-content">
@@ -33,10 +60,30 @@ const MainContent = ({
           />
         </div>
 
+        <div className="scrap-bar">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Paste URL to Scrap"
+            value={scrapUrl}
+            onChange={(e) => setScrapUrl(e.target.value)}
+          />
+          <button className="scrap-btn" onClick={() => scrapUrlEvent()}>
+            {!scrapData?.isLoading ? (
+              <>
+                Scrap
+                <i className="fas fa-sign-out" style={{marginLeft: '1em'}}></i>
+              </>
+            ) : (
+              <>Scrapping...</>
+            )}
+          </button>
+        </div>
+
         <div className="filters">
           {types
             ?.filter((e) => categories?.some((i) => i === e?.name))
-            ?.sort((a,b)=> a?.order - b?.order)
+            ?.sort((a, b) => a?.order - b?.order)
             .map((category) => (
               <div
                 key={category?.name}

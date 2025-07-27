@@ -18,7 +18,7 @@ const ProductCard = ({ product, isAdmin, editEvent, deleteEvent }) => {
       <div className="product-details">
         <div className="product-category">{product.category}</div>
         <h3 className="product-name">{product.name}</h3>
-        <p className="product-description">{product.description}</p>
+        {/* <p className="product-description">{product.description}</p> */}
         <div className="product-price-row"></div>
         {isAdmin && (
           <div className="action-buttons">

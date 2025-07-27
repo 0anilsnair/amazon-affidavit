@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { APP_NAME } from "../../constants/general";
 import "./Header.scss";
+import AppLogo from '../../../assets/app-logo-blue.png';
 
 const Header = (props) => {
   const navigate = useNavigate();
@@ -13,8 +14,7 @@ const Header = (props) => {
       </div>
       <header className="header">
         <div className="app-name">
-          <i className="fas fa-shopping-bag"></i>
-          {APP_NAME}
+          <img className="app-logo" src={AppLogo} />
           {props?.isAdmin && <span className="admin-label">Admin</span>}
         </div>
         {!props?.isAdmin ? (
@@ -24,6 +24,13 @@ const Header = (props) => {
           </button>
         ) : (
           <div className="action-btns">
+            <button
+              className="category-btn"
+              onClick={() => props?.addCategoryEvent()}
+            >
+              <i className="fas fa-cube"></i>
+              Add Category
+            </button>
             <button
               className="product-btn"
               onClick={() => props?.addProductEvent()}

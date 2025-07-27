@@ -22,6 +22,10 @@ const ProductCard = ({ product, isAdmin, editEvent, deleteEvent }) => {
         <div className="product-price-row"></div>
         {isAdmin && (
           <div className="action-buttons">
+            <button className="open-btn" onClick={() => handleOpen(product)}>
+              <i className="fas fa-external-link"></i>
+              Open
+            </button>
             <button className="edit-btn" onClick={() => editEvent(product)}>
               <i className="fas fa-pencil"></i>
               Edit

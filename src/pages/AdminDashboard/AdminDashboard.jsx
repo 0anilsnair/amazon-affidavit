@@ -15,9 +15,11 @@ import { analytics, db } from "../../config/firebase";
 import AddProductModal from "./AddProductModal/AddProductModal";
 import DeleteModal from "../../common/components/DeleteModal/DeleteModal";
 import { logEvent } from "firebase/analytics";
+import AddCategoryModal from "./AddCategoryModal/AddCategoryModal";
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
+  const [types, setTypes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const filteredProducts = products.filter((product) => {
@@ -35,9 +37,11 @@ const AdminDashboard = () => {
   const [modalOpen, setModelOpen] = useState(false);
   const [editData, setEditData] = useState();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
   useEffect(() => {
     fetchProducts();
+    fetchTypes();
     logEvent(analytics, "page_view", {
       page: "Admin Page",
     });
@@ -57,9 +61,28 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchTypes = async () => {
+    try {
+      const typesCol = collection(db, "types");
+      const typesSnapshot = await getDocs(typesCol);
+      const typeList = typesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTypes(typeList);
+    } catch (error) {
+      console.error("Error fetching Categories:", error);
+    }
+  };
+
   const addProductEvent = () => {
     setEditData();
     setModelOpen(true);
+  };
+
+  const addCategoryEvent = () => {
+    setEditData();
+    setCategoryModalOpen(true);
   };
 
   const handleAddProduct = (data) => {
@@ -104,12 +127,11 @@ const AdminDashboard = () => {
           ...data,
           timestamp: new Date(),
         });
-        setEditData();
         logEvent(analytics, "add_shipping_info", {
           action: "Edit Product",
         });
       }
-
+      setEditData();
       setModelOpen(false);
       await fetchProducts();
     } catch (e) {
@@ -137,14 +159,59 @@ const AdminDashboard = () => {
     });
   };
 
+  const addCategory = async (data) => {
+    console.log(data);
+
+    if (!data?.id) {
+      const docRef = await addDoc(collection(db, "types"), {
+        ...data,
+        timestamp: new Date(),
+      });
+      logEvent(analytics, "add_to_wishlist", {
+        action: "Add Category",
+      });
+      await fetchTypes();
+    } else {
+      const docRef = doc(db, "types", data?.id);
+      await updateDoc(docRef, {
+        ...data,
+        timestamp: new Date(),
+      });
+      logEvent(analytics, "add_to_wishlist", {
+        action: "Edit Category",
+      });
+      await fetchTypes();
+    }
+  };
+
+  const deleteCategory = async (data) => {
+    const docRef = doc(db, "types", data?.id);
+    await deleteDoc(docRef);
+    setDeleteModalOpen(false);
+    await fetchTypes();
+    logEvent(analytics, "remove_from_cart", {
+      action: "Delete Category",
+    });
+  };
+
   return (
     <div>
       <AddProductModal
         modalOpen={modalOpen}
         data={editData}
+        types={types}
         closeModal={() => setModelOpen(false)}
         handleAddProduct={handleAddProduct}
         addProduct={addProduct}
+      />
+      <AddCategoryModal
+        modalOpen={categoryModalOpen}
+        data={editData}
+        types={types}
+        closeModal={() => setCategoryModalOpen(false)}
+        addCategoryEvent={addCategory}
+        addProduct={addProduct}
+        deleteCategory={deleteCategory}
       />
       <DeleteModal
         isOpen={deleteModalOpen}
@@ -153,7 +220,11 @@ const AdminDashboard = () => {
         itemName={editData?.name}
       />
       <div className="app-container">
-        <Header isAdmin={true} addProductEvent={addProductEvent} />
+        <Header
+          isAdmin={true}
+          addProductEvent={addProductEvent}
+          addCategoryEvent={addCategoryEvent}
+        />
         <MainContent
           isAdmin={true}
           products={filteredProducts}

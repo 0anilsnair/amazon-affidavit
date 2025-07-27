@@ -65,3 +65,27 @@
             justify-content: center;
             color: white;
         }
+
+        .app-logo {
+            width: 90px;
+            height: 35px;
+        }
+
+        .category-btn {
+                background-color: var(--gray-color);
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                font-weight: 500;
+                transition: var(--transition);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .category-btn:hover {
+                background-color: #768191;
+                transform: translateY(-2px);
+            }

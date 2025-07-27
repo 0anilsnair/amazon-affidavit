@@ -8,6 +8,7 @@ const AddProductModal = ({
   handleAddProduct,
   addProduct,
   data,
+  types,
 }) => {
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -40,7 +41,9 @@ const AddProductModal = ({
       <h2>{newProduct?.id ? "Edit Product" : "Add New Product"}</h2>
       <form
         className="add-product-form"
-        onSubmit={(event) => event?.preventDefault() && handleAddProduct(newProduct)}
+        onSubmit={(event) =>
+          event?.preventDefault() && handleAddProduct(newProduct)
+        }
         noValidate
       >
         <input
@@ -81,11 +84,9 @@ const AddProductModal = ({
           required
         >
           <option value="">Select Product Type *</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Home & Kitchen">Home & Kitchen</option>
-          <option value="Furniture">Furniture</option>
-          <option value="Sports & Fitness">Sports & Fitness</option>
-          <option value="Other">Other</option>
+          {types?.sort((a,b)=> a?.order - b?.order)?.map((e) => (
+            <option value={e?.name}>{e?.name}</option>
+          ))}
         </select>
         <div className="modal-buttons">
           <button

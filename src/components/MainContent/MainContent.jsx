@@ -1,4 +1,4 @@
-import './MainContent.scss'
+import "./MainContent.scss";
 import { useState } from "react";
 import ProductList from "../ProductList/ProductList";
 
@@ -11,7 +11,8 @@ const MainContent = ({
   activeCategory,
   setActiveCategory,
   deleteEvent,
-  editEvent
+  editEvent,
+  types,
 }) => {
 
   return (
@@ -33,37 +34,32 @@ const MainContent = ({
         </div>
 
         <div className="filters">
-          {categories.map((category) => (
-            <div
-              key={category}
-              className={`filter ${
-                activeCategory === category ? "filter-active" : ""
-              }`}
-              onClick={() => setActiveCategory(category)}
-            >
-              {category === "All" && <i className="fas fa-th-large"></i>}
-              {category === "Electronics" && <i className="fas fa-laptop"></i>}
-              {category === "Home & Kitchen" && <i className="fas fa-home"></i>}
-              {category === "Furniture" && <i className="fas fa-chair"></i>}
-              {category === "Sports & Fitness" && (
-                <i className="fas fa-dumbbell"></i>
-              )}
-              {category === "Other" && <i className="fas fa-cube"></i>}
-              {category}
-            </div>
-          ))}
+          {types
+            ?.filter((e) => categories?.some((i) => i === e?.name))
+            ?.sort((a,b)=> a?.order - b?.order)
+            .map((category) => (
+              <div
+                key={category?.name}
+                className={`filter ${
+                  activeCategory === category?.name ? "filter-active" : ""
+                }`}
+                onClick={() => setActiveCategory(category?.name)}
+              >
+                <i className={`fas ${category?.icon}`}></i>
+                {category?.name}
+              </div>
+            ))}
         </div>
       </div>
 
-      <ProductList 
-        products={products} 
+      <ProductList
+        products={products}
         isAdmin={isAdmin}
         editEvent={editEvent}
         deleteEvent={deleteEvent}
-        />
+      />
     </main>
   );
 };
-
 
 export default MainContent;

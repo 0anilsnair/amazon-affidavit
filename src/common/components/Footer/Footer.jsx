@@ -31,10 +31,10 @@ const Footer = () => {
 
         <div className="footer-section">
           <h3 className="footer-title">Contact Us</h3>
-          <a href="#" className="footer-link">
+          <a href="mailto:itsyourtopchoice@gmail.com" className="footer-link">
             <i className="fas fa-envelope"></i> itsyourtopchoice@gmail.com
           </a>
-          <a href="#" className="footer-link">
+          <a href="tel:+91 81291 87135" className="footer-link">
             <i className="fas fa-phone"></i> +91 81291 87135
           </a>
           <a href="#" className="footer-link">
@@ -45,16 +45,16 @@ const Footer = () => {
         <div className="footer-section">
           <h3 className="footer-title">Follow Us</h3>
           <div style={{ display: "flex", gap: "1rem" }}>
-            <a href="#" className="footer-link">
+            <a href="https://www.facebook.com/profile.php?id=61578523242070" target='blank' className="footer-link">
               <i className="fab fa-facebook-f"></i>
             </a>
-            <a href="#" className="footer-link">
+            <a href="https://x.com/TopChoiceForYou" target='blank' className="footer-link">
               <i className="fab fa-twitter"></i>
             </a>
-            <a href="#" className="footer-link">
+            <a href="https://www.instagram.com/__topchoice__/" target='blank' className="footer-link">
               <i className="fab fa-instagram"></i>
             </a>
-            <a href="#" className="footer-link">
+            <a href="https://www.linkedin.com/in/topchoiceforyou/" target='blank' className="footer-link">
               <i className="fab fa-linkedin-in"></i>
             </a>
           </div>

@@ -2,7 +2,7 @@
 import React from 'react';
 import './Modal.scss';
 
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, children, className }) => {
   if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
@@ -11,7 +11,7 @@ const Modal = ({ isOpen, onClose, children }) => {
 
   return (
     <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="modal-content">{children}</div>
+      <div className={`${className || ''} modal-content`}>{children}</div>
     </div>
   );
 };

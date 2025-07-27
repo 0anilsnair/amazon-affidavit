@@ -9,6 +9,7 @@ import { logEvent } from "firebase/analytics";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
+  const [types, setTypes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const filteredProducts = products.filter((product) => {
@@ -26,6 +27,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchTypes();
     logEvent(analytics, "page_view", {
       page: "User Page",
     });
@@ -45,6 +47,20 @@ const Dashboard = () => {
     }
   };
 
+  const fetchTypes = async () => {
+    try {
+      const typesCol = collection(db, "types");
+      const typesSnapshot = await getDocs(typesCol);
+      const typeList = typesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTypes(typeList);
+    } catch (error) {
+      console.error("Error fetching Categories:", error);
+    }
+  };
+
   return (
     <div>
       <div className="app-container">
@@ -56,6 +72,7 @@ const Dashboard = () => {
           categories={categories}
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
+          types={types}
         />
         <Footer />
       </div>

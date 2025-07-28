@@ -89,8 +89,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     if (
       !data.name.trim() ||
-      !data.link.trim() | !data.category.trim() ||
-      !data.image.trim()
+      !data.link.trim() | !data.category.trim() 
     ) {
       alert("Please enter mandatory fields");
       return;
@@ -107,8 +106,7 @@ const AdminDashboard = () => {
     try {
       if (
         !data.name.trim() ||
-        !data.link.trim() | !data.category.trim() ||
-        !data.image.trim()
+        !data.link.trim() | !data.category.trim()
       ) {
         alert("Please enter mandatory fields");
         return;

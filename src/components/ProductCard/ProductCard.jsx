@@ -13,7 +13,7 @@ const ProductCard = ({ product, isAdmin, editEvent, deleteEvent }) => {
       title="Click to Open"
     >
       <div className="product-image-container">
-        <img src={product.image} alt={product.name} className="product-image" />
+        <img src={product.image || 'https://blocks.astratic.com/img/general-img-landscape.png'} alt={product.name} className="product-image" />
       </div>
       <div className="product-details">
         <div className="product-category">{product.category}</div>

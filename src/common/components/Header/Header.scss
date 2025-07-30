@@ -59,7 +59,7 @@
         }
 
         .aff-label {
-            background-color: #2a75e6;
+            background-color: var(--primary-color);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -69,6 +69,7 @@
         .app-logo {
             width: 90px;
             height: 35px;
+            filter: brightness(0);
         }
 
         .category-btn {

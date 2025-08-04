@@ -1,4 +1,3 @@
-// src/pages/AdminLogin/AdminLogin.js
 import React, { useState } from "react";
 import "./Login.scss";
 import { Link, useNavigate } from "react-router-dom";
@@ -13,20 +12,15 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     try {
-      if (!username.trim() || !password) {
-        alert("Please enter both username and password");
-        return;
-      }
+      const token = await loginWithUsernamePassword(username.trim(), password);
+      localStorage.setItem('ack-tk', token);
       logEvent(analytics, "login", {
         action: "Login",
         time: new Date(),
       });
-      const user = await loginWithUsernamePassword(username.trim(), password);
-      navigate("/admin");
-    } catch (err) {
-      console.log(err);
-      
-      alert("Login failed");
+      navigate("/app/admin");
+    } catch (error) {
+      alert("Login failed: " + error.message);
     }
   };
 

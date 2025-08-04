@@ -17,7 +17,7 @@ import DeleteModal from "../../common/components/DeleteModal/DeleteModal";
 import { logEvent } from "firebase/analytics";
 import AddCategoryModal from "./AddCategoryModal/AddCategoryModal";
 
-const AdminDashboard = () => {
+export function Component() {
   const [products, setProducts] = useState([]);
   const [types, setTypes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -239,5 +239,3 @@ const AdminDashboard = () => {
     </div>
   );
 };
-
-export default AdminDashboard;

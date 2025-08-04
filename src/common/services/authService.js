@@ -1,17 +1,18 @@
-// src/services/manualAuthService.js
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { auth, db } from "../../config/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-// Check if a user exists with matching username and password
 export const loginWithUsernamePassword = async (username, password) => {
-  const usersRef = collection(db, "users");  
-  const q = query(usersRef, where("username", "==", username), where("password", "==", password));
-  const snapshot = await getDocs(q);
-
-  if (!snapshot.empty) {
-    const userDoc = snapshot.docs[0];
-    return { uid: userDoc.id, ...userDoc.data() };
-  } else {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      username,
+      password
+    );
+    const user = userCredential.user;
+    const token = await user.getIdToken();
+    localStorage.setItem("ack-tk", token);
+    return token;
+  } catch (error) {
     throw new Error("Invalid username or password");
   }
 };

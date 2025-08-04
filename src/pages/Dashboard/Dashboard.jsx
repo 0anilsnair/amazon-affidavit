@@ -26,6 +26,7 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
+    localStorage.removeItem('ack-tk');
     fetchProducts();
     fetchTypes();
     logEvent(analytics, "page_view", {

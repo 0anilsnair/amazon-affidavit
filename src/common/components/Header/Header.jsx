@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { APP_NAME } from "../../constants/general";
 import "./Header.scss";
 import AppLogo from '../../../assets/app-logo-blue.png';
 
 const Header = (props) => {
   const navigate = useNavigate();
+
+  const logOut = () => {
+    localStorage.removeItem('ack-tk');
+    navigate("/");
+  }
 
   return (
     <>
@@ -38,7 +42,7 @@ const Header = (props) => {
               <i className="fas fa-plus"></i>
               Add Product
             </button>
-            <button className="signin-btn" onClick={() => navigate("/")}>
+            <button className="signin-btn" onClick={() => logOut()}>
               <i className="fas fa-sign-out"></i>
               Logout
             </button>
